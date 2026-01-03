@@ -1,9 +1,11 @@
 ﻿from pathlib import Path
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "dev-only-change-later"
-DEBUG = True
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-change-later")
+DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
+
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 INSTALLED_APPS = [
@@ -13,12 +15,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
-    # MVP apps
     "accounts",
     "clients",
     "loans",
     "audit",
+"repayments",
+
 ]
 
 MIDDLEWARE = [
@@ -50,18 +52,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
-# Database via DATABASE_URL env var (already in docker-compose.yml)
-import dj_database_url
 DATABASES = {
-    "default": dj_database_url.config(default="postgresql://microfinance:microfinance_password_change_me@db:5432/microfinance")
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("POSTGRES_DB", "microfinance"),
+        "USER": os.environ.get("POSTGRES_USER", "microfinance"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "microfinance_password_change_me"),
+        "HOST": os.environ.get("POSTGRES_HOST", "db"),
+        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+    }
 }
-
-AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
-]
 
 LANGUAGE_CODE = "en-gb"
 TIME_ZONE = "UTC"
