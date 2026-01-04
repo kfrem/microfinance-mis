@@ -1,0 +1,350 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Dashboard - Microfinance MIS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            opacity: 0.9;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+        
+        .metric-card h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #718096;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.25rem;
+        }
+        
+        .metric-card .subvalue {
+            font-size: 0.875rem;
+            color: #a0aec0;
+        }
+        
+        .metric-card.success { border-left: 4px solid #48bb78; }
+        .metric-card.warning { border-left: 4px solid #ed8936; }
+        .metric-card.danger { border-left: 4px solid #f56565; }
+        .metric-card.info { border-left: 4px solid #4299e1; }
+        
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+        
+        .section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #2d3748;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.75rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+        }
+        
+        th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        tr:nth-child(even) {
+            background: #f7fafc;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .badge.success { background: #c6f6d5; color: #22543d; }
+        .badge.warning { background: #feebc8; color: #7c2d12; }
+        .badge.danger { background: #fed7d7; color: #742a2a; }
+        
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .nav-links a {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            transition: all 0.2s;
+        }
+        
+        .nav-links a:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+        }
+        
+        .grid-2col {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>🎯 Executive Dashboard</h1>
+            <p>Real-time portfolio overview and key performance indicators</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="nav-links">
+            <a href="{% url 'dashboard:executive' %}">📊 Dashboard</a>
+            <a href="{% url 'dashboard:portfolio_report' %}">📈 Portfolio Report</a>
+            <a href="{% url 'dashboard:bog_report' %}">🏛️ BoG Report</a>
+            <a href="/admin/">⚙️ Admin Panel</a>
+        </div>
+        
+        <!-- Key Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card success">
+                <h3>Total Portfolio Value</h3>
+                <div class="value">GH₵ {{ summary.total_portfolio_value|floatformat:2 }}</div>
+                <div class="subvalue">{{ summary.active_loans_count }} active loans</div>
+            </div>
+            
+            <div class="metric-card info">
+                <h3>Total Outstanding</h3>
+                <div class="value">GH₵ {{ summary.total_outstanding|floatformat:2 }}</div>
+                <div class="subvalue">{{ summary.total_clients }} total clients</div>
+            </div>
+            
+            <div class="metric-card {% if summary.collection_rate >= 95 %}success{% elif summary.collection_rate >= 85 %}warning{% else %}danger{% endif %}">
+                <h3>Collection Rate</h3>
+                <div class="value">{{ summary.collection_rate|floatformat:1 }}%</div>
+                <div class="subvalue">GH₵ {{ summary.total_collected|floatformat:2 }} collected</div>
+            </div>
+            
+            <div class="metric-card {% if par_metrics.par_30_rate < 5 %}success{% elif par_metrics.par_30_rate < 10 %}warning{% else %}danger{% endif %}">
+                <h3>PAR 30</h3>
+                <div class="value">{{ par_metrics.par_30_rate|floatformat:2 }}%</div>
+                <div class="subvalue">GH₵ {{ par_metrics.par_30_value|floatformat:2 }} at risk</div>
+            </div>
+            
+            <div class="metric-card {% if par_metrics.par_90_rate < 3 %}success{% elif par_metrics.par_90_rate < 7 %}warning{% else %}danger{% endif %}">
+                <h3>PAR 90 (NPL)</h3>
+                <div class="value">{{ par_metrics.par_90_rate|floatformat:2 }}%</div>
+                <div class="subvalue">{{ par_metrics.par_90_count }} loans</div>
+            </div>
+            
+            <div class="metric-card warning">
+                <h3>Provisions Required</h3>
+                <div class="value">GH₵ {{ bog_classification.total_provisions_required|floatformat:2 }}</div>
+                <div class="subvalue">Per BoG guidelines</div>
+            </div>
+        </div>
+        
+        <!-- BoG Classification -->
+        <div class="section">
+            <h2>BoG Loan Classification</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Classification</th>
+                            <th>Count</th>
+                            <th>Outstanding Value</th>
+                            <th>Provision Rate</th>
+                            <th>Provision Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for class_name, data in bog_classification.breakdown.items %}
+                        <tr>
+                            <td>
+                                {% if class_name == 'current' %}
+                                    <span class="badge success">{{ class_name|title }}</span>
+                                {% elif class_name == 'substandard' %}
+                                    <span class="badge warning">{{ class_name|title }}</span>
+                                {% else %}
+                                    <span class="badge danger">{{ class_name|title }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ data.count }}</td>
+                            <td>GH₵ {{ data.value|floatformat:2 }}</td>
+                            <td>{{ data.provision_rate }}%</td>
+                            <td>GH₵ {{ data.provision_amount|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Product Performance & Arrears Aging -->
+        <div class="grid-2col">
+            <div class="section">
+                <h2>Loan Product Performance</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Active</th>
+                                <th>Outstanding</th>
+                                <th>Arrears Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in product_performance %}
+                            <tr>
+                                <td>{{ product.product_name }}</td>
+                                <td>{{ product.active_count }}</td>
+                                <td>GH₵ {{ product.total_outstanding|floatformat:0 }}</td>
+                                <td>
+                                    {% if product.arrears_rate < 5 %}
+                                        <span class="badge success">{{ product.arrears_rate|floatformat:1 }}%</span>
+                                    {% elif product.arrears_rate < 10 %}
+                                        <span class="badge warning">{{ product.arrears_rate|floatformat:1 }}%</span>
+                                    {% else %}
+                                        <span class="badge danger">{{ product.arrears_rate|floatformat:1 }}%</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Arrears Aging Analysis</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Age Bucket</th>
+                                <th>Count</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bucket, data in arrears_aging.items %}
+                            <tr>
+                                <td>{{ bucket }}</td>
+                                <td>{{ data.count }}</td>
+                                <td>GH₵ {{ data.value|floatformat:2 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Client Statistics -->
+        <div class="section">
+            <h2>Client Statistics</h2>
+            <div class="metrics-grid">
+                <div class="metric-card info">
+                    <h3>Total Clients</h3>
+                    <div class="value">{{ client_stats.total_clients }}</div>
+                </div>
+                <div class="metric-card success">
+                    <h3>Active Borrowers</h3>
+                    <div class="value">{{ client_stats.active_borrowers }}</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Inactive Clients</h3>
+                    <div class="value">{{ client_stats.inactive_clients }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -19,8 +19,8 @@ INSTALLED_APPS = [
     "clients",
     "loans",
     "audit",
-"repayments",
-
+    "repayments",
+    "dashboard",
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BoG Prudential Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; }
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        th, td { padding: 0.5rem; border: 1px solid #ddd; text-align: left; }
+        th { background: #f5f5f5; }
+        .header { background: #2c3e50; color: white; padding: 1rem; margin: -2rem -2rem 2rem; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Bank of Ghana Prudential Report</h1>
+        <p>Report Date: {{ report.report_date }}</p>
+    </div>
+    
+    <h2>Loan Portfolio Summary</h2>
+    <table>
+        <tr>
+            <td><strong>Gross Loan Portfolio</strong></td>
+            <td>GH₵ {{ report.gross_loan_portfolio|floatformat:2 }}</td>
+        </tr>
+        <tr>
+            <td><strong>Number of Active Loans</strong></td>
+            <td>{{ report.number_of_active_loans }}</td>
+        </tr>
+        <tr>
+            <td><strong>Number of Borrowers</strong></td>
+            <td>{{ report.number_of_borrowers }}</td>
+        </tr>
+        <tr>
+            <td><strong>PAR 30</strong></td>
+            <td>{{ report.par_30|floatformat:2 }}%</td>
+        </tr>
+        <tr>
+            <td><strong>PAR 90 (NPL Ratio)</strong></td>
+            <td>{{ report.npl_ratio|floatformat:2 }}%</td>
+        </tr>
+        <tr>
+            <td><strong>Total Provisions Required</strong></td>
+            <td>GH₵ {{ report.total_provisions|floatformat:2 }}</td>
+        </tr>
+    </table>
+    
+    <h2>Loan Classification Breakdown</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Classification</th>
+                <th>Count</th>
+                <th>Outstanding Value</th>
+                <th>Provision Rate</th>
+                <th>Provision Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for class_name, data in report.loan_classification.items %}
+            <tr>
+                <td>{{ class_name|title }}</td>
+                <td>{{ data.count }}</td>
+                <td>GH₵ {{ data.value|floatformat:2 }}</td>
+                <td>{{ data.provision_rate }}%</td>
+                <td>GH₵ {{ data.provision_amount|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div style="margin-top: 2rem;">
+        <a href="{% url 'dashboard:executive' %}" style="padding: 0.5rem 1rem; background: #667eea; color: white; text-decoration: none; border-radius: 4px;">← Back to Dashboard</a>
+    </div>
+</body>
+</html>
