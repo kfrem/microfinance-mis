@@ -243,11 +243,11 @@ class PortfolioAnalytics:
             loans__status='active'
         ).distinct().count()
         
-        clients_by_risk = Client.objects.values('risk_level').annotate(
+        clients_by_risk = Client.objects.values('risk_category').annotate(
             count=Count('id')
         )
         
-        risk_breakdown = {item['risk_level']: item['count'] for item in clients_by_risk}
+        risk_breakdown = {item['risk_category']: item['count'] for item in clients_by_risk}
         
         return {
             'total_clients': total_clients,
