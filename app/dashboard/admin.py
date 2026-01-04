@@ -33,7 +33,3 @@ class DashboardAdmin(admin.ModelAdmin):
             },
         ]
         return super().changelist_view(request, extra_context)
-
-
-# Register a simple way to access dashboards from admin
-admin.site.index_template = 'admin/dashboard_index.html'

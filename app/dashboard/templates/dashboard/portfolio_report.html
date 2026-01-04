@@ -1,20 +1,34 @@
-{% extends "dashboard/executive_dashboard.html" %}
-{% block content %}
-<div class="container">
-    <h1>Portfolio Quality Report</h1>
-    <p>Generated: {{ report.generated_at }}</p>
-    
-    <div class="section">
-        <h2>Summary</h2>
-        <p>Total Portfolio: GH₵ {{ report.summary.total_portfolio_value|floatformat:2 }}</p>
-        <p>Total Outstanding: GH₵ {{ report.summary.total_outstanding|floatformat:2 }}</p>
-        <p>Collection Rate: {{ report.summary.collection_rate|floatformat:2 }}%</p>
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Portfolio Quality Report</title>
+    <style>
+        body { font-family: Arial; margin: 2rem; }
+        .header { background: #667eea; color: white; padding: 1rem; margin: -2rem -2rem 2rem; }
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        th, td { padding: 0.5rem; border: 1px solid #ddd; }
+        th { background: #f5f5f5; }
+        a { color: #667eea; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Portfolio Quality Report</h1>
+        <p>Generated: {{ report.generated_at }}</p>
     </div>
     
-    <div class="section">
-        <h2>PAR Metrics</h2>
-        <p>PAR 30: {{ report.par_metrics.par_30_rate|floatformat:2 }}%</p>
-        <p>PAR 90: {{ report.par_metrics.par_90_rate|floatformat:2 }}%</p>
+    <h2>Summary</h2>
+    <p>Total Portfolio: GH₵ {{ report.summary.total_portfolio_value|floatformat:2 }}</p>
+    <p>Total Outstanding: GH₵ {{ report.summary.total_outstanding|floatformat:2 }}</p>
+    <p>Collection Rate: {{ report.summary.collection_rate|floatformat:2 }}%</p>
+    
+    <h2>PAR Metrics</h2>
+    <p>PAR 30: {{ report.par_metrics.par_30_rate|floatformat:2 }}%</p>
+    <p>PAR 90: {{ report.par_metrics.par_90_rate|floatformat:2 }}%</p>
+    
+    <div style="margin-top: 2rem;">
+        <a href="{% url 'dashboard:executive' %}">← Back to Dashboard</a>
     </div>
-</div>
-{% endblock %}
+</body>
+</html>
