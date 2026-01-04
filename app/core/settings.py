@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "repayments",
     "dashboard",
     "reports",
+    "management_reports",
 ]
 
 MIDDLEWARE = [
