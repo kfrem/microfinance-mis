@@ -21,7 +21,7 @@
       DATABASE_URL: postgresql://microfinance:microfinance_password_change_me@db:5432/microfinance
     depends_on:
       - db
-    command: bash -lc "pip install --no-cache-dir django psycopg[binary] dj-database-url && if [ ! -f manage.py ]; then django-admin startproject core .; fi && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: bash -lc "pip install --no-cache-dir django psycopg[binary] dj-database-url python-dateutil && if [ ! -f manage.py ]; then django-admin startproject core .; fi && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
 
 volumes:
   pgdata:
