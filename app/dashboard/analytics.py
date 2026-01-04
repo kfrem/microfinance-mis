@@ -23,9 +23,10 @@ class PortfolioAnalytics:
             total=Coalesce(Sum('principal'), Decimal('0'))
         )['total']
         
-        total_outstanding = active_loans.aggregate(
-            total=Coalesce(Sum('outstanding_balance'), Decimal('0'))
-        )['total']
+        # Calculate outstanding balance by summing total_repayable for each loan
+        total_outstanding = Decimal('0')
+        for loan in active_loans:
+            total_outstanding += loan.get_outstanding_balance()
         
         total_disbursed = Loan.objects.filter(
             status__in=['active', 'closed']
@@ -58,21 +59,22 @@ class PortfolioAnalytics:
         today = date.today()
         active_loans = Loan.objects.filter(status='active')
         
-        total_outstanding = active_loans.aggregate(
-            total=Coalesce(Sum('outstanding_balance'), Decimal('0'))
-        )['total']
+        # Calculate total outstanding
+        total_outstanding = Decimal('0')
+        for loan in active_loans:
+            total_outstanding += loan.get_outstanding_balance()
         
         # PAR 30: Loans with payments overdue by 30+ days
         par_30_loans = active_loans.filter(days_in_arrears__gte=30)
-        par_30_value = par_30_loans.aggregate(
-            total=Coalesce(Sum('outstanding_balance'), Decimal('0'))
-        )['total']
+        par_30_value = Decimal('0')
+        for loan in par_30_loans:
+            par_30_value += loan.get_outstanding_balance()
         
         # PAR 90: Loans with payments overdue by 90+ days
         par_90_loans = active_loans.filter(days_in_arrears__gte=90)
-        par_90_value = par_90_loans.aggregate(
-            total=Coalesce(Sum('outstanding_balance'), Decimal('0'))
-        )['total']
+        par_90_value = Decimal('0')
+        for loan in par_90_loans:
+            par_90_value += loan.get_outstanding_balance()
         
         return {
             'par_30_value': par_30_value,
@@ -126,7 +128,7 @@ class PortfolioAnalytics:
             classification = loan.bog_classification.lower()
             if classification in classification_breakdown:
                 classification_breakdown[classification]['count'] += 1
-                classification_breakdown[classification]['value'] += loan.outstanding_balance
+                classification_breakdown[classification]['value'] += loan.get_outstanding_balance()
         
         # Calculate provision amounts
         for classification, data in classification_breakdown.items():
@@ -157,14 +159,14 @@ class PortfolioAnalytics:
                 status='active'
             )
             
-            total_outstanding = active_loans.aggregate(
-                total=Coalesce(Sum('outstanding_balance'), Decimal('0'))
-            )['total']
+            total_outstanding = Decimal('0')
+            for loan in active_loans:
+                total_outstanding += loan.get_outstanding_balance()
             
             arrears_loans = active_loans.filter(days_in_arrears__gt=0)
-            arrears_value = arrears_loans.aggregate(
-                total=Coalesce(Sum('outstanding_balance'), Decimal('0'))
-            )['total']
+            arrears_value = Decimal('0')
+            for loan in arrears_loans:
+                arrears_value += loan.get_outstanding_balance()
             
             performance.append({
                 'product_name': product.name,
@@ -222,11 +224,13 @@ class PortfolioAnalytics:
         
         aging_analysis = {}
         for bucket_name, queryset in aging_buckets.items():
+            total_value = Decimal('0')
+            for loan in queryset:
+                total_value += loan.get_outstanding_balance()
+            
             aging_analysis[bucket_name] = {
                 'count': queryset.count(),
-                'value': queryset.aggregate(
-                    total=Coalesce(Sum('outstanding_balance'), Decimal('0'))
-                )['total'],
+                'value': total_value,
             }
         
         return aging_analysis
