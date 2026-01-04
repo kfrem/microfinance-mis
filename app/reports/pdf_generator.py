@@ -262,9 +262,9 @@ class PDFReportGenerator:
         
         metrics_data = [
             ['Metric', 'Value'],
-            ['Total Portfolio (GHS)', f'{portfolio["total_portfolio"]:,.2f}'],
+            ['Total Portfolio (GHS)', f'{portfolio["total_portfolio_value"]:,.2f}'],
             ['Outstanding Balance (GHS)', f'{portfolio["total_outstanding"]:,.2f}'],
-            ['Active Loans', f'{portfolio["active_loans"]:,}'],
+            ['Active Loans', f'{portfolio["active_loans_count"]:,}'],
             ['Collection Rate', f'{portfolio["collection_rate"]:.2f}%'],
         ]
         
