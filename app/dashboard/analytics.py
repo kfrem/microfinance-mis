@@ -125,7 +125,7 @@ class PortfolioAnalytics:
         }
         
         for loan in active_loans:
-            classification = loan.bog_classification.lower()
+            classification = loan.classification.lower()
             if classification in classification_breakdown:
                 classification_breakdown[classification]['count'] += 1
                 classification_breakdown[classification]['value'] += loan.get_outstanding_balance()
