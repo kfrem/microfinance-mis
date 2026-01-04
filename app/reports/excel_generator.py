@@ -231,9 +231,9 @@ class ExcelReportGenerator:
         
         portfolio = self.analytics.get_portfolio_summary()
         
-        ws.append(['Total Portfolio Value (GHS):', float(portfolio['total_portfolio'])])
+        ws.append(['Total Portfolio Value (GHS):', float(portfolio['total_portfolio_value'])])
         ws.append(['Total Outstanding (GHS):', float(portfolio['total_outstanding'])])
-        ws.append(['Number of Active Loans:', portfolio['active_loans']])
+        ws.append(['Number of Active Loans:', portfolio['active_loans_count']])
         ws.append([])
         
         # Loan Classification (BoG Standard)
