@@ -15,10 +15,34 @@ def get_client_ip(request):
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'phone', 'email', 'created_at')
-    search_fields = ('full_name', 'phone', 'email')
-    list_filter = ('created_at',)
+    list_display = ('client_id', 'full_name', 'client_type', 'phone', 'risk_category', 'status', 'kyc_verified', 'created_at')
+    list_filter = ('client_type', 'risk_category', 'status', 'kyc_verified', 'created_at')
+    search_fields = ('client_id', 'full_name', 'phone', 'email', 'ghana_card_id')
+    readonly_fields = ('client_id', 'created_at', 'updated_at', 'created_by')
     date_hierarchy = 'created_at'
+    
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('client_id', 'client_type', 'full_name', 'status')
+        }),
+        ('Contact Details', {
+            'fields': ('phone', 'email', 'address')
+        }),
+        ('KYC Information', {
+            'fields': ('ghana_card_id', 'date_of_birth', 'occupation', 'employer', 'monthly_income')
+        }),
+        ('Risk & Compliance', {
+            'fields': ('risk_category', 'kyc_verified', 'kyc_verified_date', 'kyc_verified_by')
+        }),
+        ('Group Information', {
+            'fields': ('group_size', 'group_leader'),
+            'classes': ('collapse',)
+        }),
+        ('Additional Information', {
+            'fields': ('notes', 'created_at', 'updated_at', 'created_by'),
+            'classes': ('collapse',)
+        }),
+    )
 
     def save_model(self, request, obj, form, change):
         """Override to create audit log on save."""
