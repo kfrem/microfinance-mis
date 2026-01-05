@@ -22,6 +22,40 @@
     .page-header h1 {
         color: #2d3748;
         font-size: 32px;
+        margin-bottom: 10px;
+    }
+    
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .metric-card {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+    
+    .metric-card h3 {
+        font-size: 14px;
+        color: #718096;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+    
+    .metric-value {
+        font-size: 36px;
+        font-weight: bold;
+        color: #2d3748;
+    }
+    
+    .metric-label {
+        font-size: 12px;
+        color: #a0aec0;
+        margin-top: 5px;
     }
     
     .content-section {
@@ -29,6 +63,40 @@
         padding: 30px;
         border-radius: 15px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    
+    .content-section h2 {
+        color: #2d3748;
+        font-size: 24px;
+        margin-bottom: 20px;
+        border-bottom: 3px solid #667eea;
+        padding-bottom: 10px;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+    
+    .stat-item {
+        padding: 15px;
+        background: #f7fafc;
+        border-radius: 8px;
+    }
+    
+    .stat-item strong {
+        display: block;
+        color: #4a5568;
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+    
+    .stat-item span {
+        font-size: 24px;
+        color: #2d3748;
+        font-weight: bold;
     }
 </style>
 {% endblock %}
@@ -40,9 +108,61 @@
         <p>Portfolio analytics and performance metrics</p>
     </div>
     
+    <!-- Key Metrics -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <h3>Total Portfolio</h3>
+            <div class="metric-value">GHS {{ summary.total_portfolio_value|floatformat:2|default:"0.00" }}</div>
+            <div class="metric-label">Total principal disbursed</div>
+        </div>
+        
+        <div class="metric-card">
+            <h3>Outstanding Balance</h3>
+            <div class="metric-value">GHS {{ summary.total_outstanding|floatformat:2|default:"0.00" }}</div>
+            <div class="metric-label">Total amount to collect</div>
+        </div>
+        
+        <div class="metric-card">
+            <h3>Active Loans</h3>
+            <div class="metric-value">{{ summary.active_loans|default:"0" }}</div>
+            <div class="metric-label">Currently active</div>
+        </div>
+        
+        <div class="metric-card">
+            <h3>Collection Rate</h3>
+            <div class="metric-value">{{ summary.collection_rate|floatformat:1|default:"0.0" }}%</div>
+            <div class="metric-label">Overall collection efficiency</div>
+        </div>
+    </div>
+    
+    <!-- Portfolio Quality -->
     <div class="content-section">
-        <h2>Analytics Overview</h2>
-        <p>Portfolio analysis, PAR metrics, and trend analysis will be displayed here.</p>
+        <h2>📊 Portfolio Quality</h2>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <strong>PAR 30 Days</strong>
+                <span>{{ par_metrics.par_30_percentage|floatformat:2|default:"0.00" }}%</span>
+            </div>
+            <div class="stat-item">
+                <strong>PAR Amount</strong>
+                <span>GHS {{ par_metrics.par_30_value|floatformat:2|default:"0.00" }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Client Statistics -->
+    <div class="content-section">
+        <h2>👥 Client Statistics</h2>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <strong>Total Clients</strong>
+                <span>{{ client_stats.total_clients|default:"0" }}</span>
+            </div>
+            <div class="stat-item">
+                <strong>Active Clients</strong>
+                <span>{{ client_stats.active_clients|default:"0" }}</span>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
