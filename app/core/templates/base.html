@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ghana Microfinance MIS{% endblock %}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-top: 80px; /* Space for fixed navbar */
+        }
+        
+        /* UNIVERSAL NAVIGATION BAR - ALWAYS VISIBLE */
+        .universal-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #2d3748;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+            padding: 0;
+        }
+        
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+        
+        .navbar-brand {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .navbar-brand:hover {
+            color: #667eea;
+        }
+        
+        .navbar-menu {
+            display: flex;
+            list-style: none;
+            gap: 5px;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar-menu li {
+            margin: 0;
+        }
+        
+        .navbar-link {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 18px 20px;
+            font-weight: 500;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .navbar-link:hover {
+            background: rgba(102, 126, 234, 0.2);
+            border-bottom-color: #667eea;
+        }
+        
+        .navbar-link.active {
+            background: rgba(102, 126, 234, 0.3);
+            border-bottom-color: #667eea;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .navbar-content {
+                flex-direction: column;
+                padding: 10px;
+            }
+            
+            .navbar-menu {
+                flex-direction: column;
+                width: 100%;
+                gap: 0;
+            }
+            
+            .navbar-link {
+                padding: 12px 20px;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            
+            body {
+                padding-top: 300px; /* More space for mobile menu */
+            }
+        }
+        
+        {% block extra_style %}{% endblock %}
+    </style>
+</head>
+<body>
+    <!-- UNIVERSAL NAVIGATION - APPEARS ON EVERY PAGE -->
+    <nav class="universal-navbar">
+        <div class="navbar-content">
+            <a href="/" class="navbar-brand">
+                🏦 Ghana Microfinance MIS
+            </a>
+            <ul class="navbar-menu">
+                <li><a href="/" class="navbar-link {% block nav_home %}{% endblock %}">🏠 Home</a></li>
+                <li><a href="/management/" class="navbar-link {% block nav_management %}{% endblock %}">📊 Management</a></li>
+                <li><a href="/reports/" class="navbar-link {% block nav_reports %}{% endblock %}">📈 Reports</a></li>
+                <li><a href="/dashboard/" class="navbar-link {% block nav_analytics %}{% endblock %}">💹 Analytics</a></li>
+                <li><a href="/admin/" class="navbar-link {% block nav_admin %}{% endblock %}">⚙️ Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <!-- PAGE CONTENT -->
+    {% block content %}{% endblock %}
+    
+    {% block extra_script %}{% endblock %}
+</body>
+</html>

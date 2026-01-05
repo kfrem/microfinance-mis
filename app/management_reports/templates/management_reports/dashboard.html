@@ -1,386 +1,331 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Management Dashboard - Microfinance MIS</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-        
-        .header h1 {
-            color: #2d3748;
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-        
-        .header p {
-            color: #718096;
-            font-size: 16px;
-        }
-        
-        .nav-tabs {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .nav-tab {
-            padding: 12px 24px;
-            background: #f7fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-            color: #4a5568;
-        }
-        
-        .nav-tab:hover {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-        
-        .nav-tab.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-        
+{% extends 'base.html' %}
+
+{% block title %}Management Dashboard - Ghana Microfinance MIS{% endblock %}
+{% block nav_management %}active{% endblock %}
+
+{% block extra_style %}
+<style>
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .page-header {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    
+    .page-header h1 {
+        color: #2d3748;
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+    
+    .page-header p {
+        color: #718096;
+        font-size: 16px;
+    }
+    
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .metric-card {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    
+    .metric-card h3 {
+        font-size: 14px;
+        color: #718096;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 10px;
+    }
+    
+    .metric-value {
+        font-size: 36px;
+        font-weight: bold;
+        color: #2d3748;
+        margin-bottom: 10px;
+    }
+    
+    .metric-change {
+        font-size: 14px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        display: inline-block;
+    }
+    
+    .metric-change.positive {
+        background: #c6f6d5;
+        color: #22543d;
+    }
+    
+    .metric-change.negative {
+        background: #fed7d7;
+        color: #742a2a;
+    }
+    
+    .report-section {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    
+    .report-section h2 {
+        color: #2d3748;
+        font-size: 24px;
+        margin-bottom: 20px;
+        border-bottom: 3px solid #667eea;
+        padding-bottom: 10px;
+    }
+    
+    .report-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 20px;
+    }
+    
+    .report-card {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 25px;
+        transition: all 0.3s;
+    }
+    
+    .report-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+    }
+    
+    .report-card h3 {
+        color: #2d3748;
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+    
+    .report-card p {
+        color: #718096;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+    
+    .report-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-primary {
+        background: #667eea;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: #5568d3;
+    }
+    
+    .btn-success {
+        background: #48bb78;
+        color: white;
+    }
+    
+    .btn-success:hover {
+        background: #38a169;
+    }
+    
+    .btn-warning {
+        background: #ed8936;
+        color: white;
+    }
+    
+    .btn-warning:hover {
+        background: #dd6b20;
+    }
+    
+    .alert {
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .alert-info {
+        background: #bee3f8;
+        color: #2c5282;
+        border-left: 4px solid #3182ce;
+    }
+    
+    .alert-warning {
+        background: #feebc8;
+        color: #7c2d12;
+        border-left: 4px solid #dd6b20;
+    }
+    
+    @media (max-width: 768px) {
         .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .metric-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .metric-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        }
-        
-        .metric-card h3 {
-            font-size: 14px;
-            color: #718096;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 10px;
-        }
-        
-        .metric-value {
-            font-size: 36px;
-            font-weight: bold;
-            color: #2d3748;
-            margin-bottom: 10px;
-        }
-        
-        .metric-change {
-            font-size: 14px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            display: inline-block;
-        }
-        
-        .metric-change.positive {
-            background: #c6f6d5;
-            color: #22543d;
-        }
-        
-        .metric-change.negative {
-            background: #fed7d7;
-            color: #742a2a;
-        }
-        
-        .report-section {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
-        }
-        
-        .report-section h2 {
-            color: #2d3748;
-            font-size: 24px;
-            margin-bottom: 20px;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
+            grid-template-columns: 1fr;
         }
         
         .report-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 20px;
+            grid-template-columns: 1fr;
         }
-        
-        .report-card {
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 25px;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        
-        .report-card:hover {
-            border-color: #667eea;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
-        }
-        
-        .report-card h3 {
-            color: #2d3748;
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-        
-        .report-card p {
-            color: #718096;
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-        
-        .report-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #5568d3;
-        }
-        
-        .btn-success {
-            background: #48bb78;
-            color: white;
-        }
-        
-        .btn-success:hover {
-            background: #38a169;
-        }
-        
-        .btn-warning {
-            background: #ed8936;
-            color: white;
-        }
-        
-        .btn-warning:hover {
-            background: #dd6b20;
-        }
-        
-        .alert {
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .alert-info {
-            background: #bee3f8;
-            color: #2c5282;
-            border-left: 4px solid #3182ce;
-        }
-        
-        .alert-warning {
-            background: #feebc8;
-            color: #7c2d12;
-            border-left: 4px solid #dd6b20;
-        }
-        
-        @media (max-width: 768px) {
-            .metrics-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .report-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .nav-tabs {
-                flex-direction: column;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>📊 Management & Board Dashboard</h1>
-            <p>Comprehensive reporting suite for executives and board members</p>
-            
-            <div class="nav-tabs">
-                <div class="nav-tab" onclick="window.location.href='/'">🏠 Home</div>
-                <div class="nav-tab active" onclick="window.location.href='/management/'">Management Reports</div>
-                <div class="nav-tab" onclick="window.location.href='/reports/'">Operational Reports</div>
-                <div class="nav-tab" onclick="window.location.href='/dashboard/'">Analytics Dashboard</div>
-                <div class="nav-tab" onclick="window.location.href='/admin/'">Admin Panel</div>
-            </div>
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>📊 Management & Board Dashboard</h1>
+        <p>Comprehensive reporting suite for executives and board members</p>
+    </div>
+    
+    <!-- Key Performance Metrics -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <h3>Total Portfolio Value</h3>
+            <div class="metric-value">GHS {{ metrics.total_portfolio|floatformat:2|default:"0.00" }}</div>
+            <span class="metric-change positive">↑ 12.5% vs last month</span>
         </div>
         
-        <!-- Key Performance Metrics -->
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <h3>Total Portfolio Value</h3>
-                <div class="metric-value">GHS {{ metrics.total_portfolio|floatformat:2|default:"0.00" }}</div>
-                <span class="metric-change positive">↑ 12.5% vs last month</span>
-            </div>
-            
-            <div class="metric-card">
-                <h3>Outstanding Balance</h3>
-                <div class="metric-value">GHS {{ metrics.total_outstanding|floatformat:2|default:"0.00" }}</div>
-                <span class="metric-change positive">↑ 8.3% vs last month</span>
-            </div>
-            
-            <div class="metric-card">
-                <h3>Collection Rate</h3>
-                <div class="metric-value">{{ metrics.collection_rate|floatformat:1|default:"0.0" }}%</div>
-                <span class="metric-change {% if metrics.collection_rate >= 95 %}positive{% else %}negative{% endif %}">
-                    {% if metrics.collection_rate >= 95 %}✓ Target Met{% else %}⚠ Below Target{% endif %}
-                </span>
-            </div>
-            
-            <div class="metric-card">
-                <h3>PAR 30 Days</h3>
-                <div class="metric-value">{{ metrics.par_30_percentage|floatformat:2|default:"0.00" }}%</div>
-                <span class="metric-change {% if metrics.par_30_percentage <= 3 %}positive{% else %}negative{% endif %}">
-                    {% if metrics.par_30_percentage <= 3 %}✓ Excellent{% else %}⚠ Monitor{% endif %}
-                </span>
-            </div>
+        <div class="metric-card">
+            <h3>Outstanding Balance</h3>
+            <div class="metric-value">GHS {{ metrics.total_outstanding|floatformat:2|default:"0.00" }}</div>
+            <span class="metric-change positive">↑ 8.3% vs last month</span>
         </div>
         
-        <!-- Management Reports Section -->
-        <div class="report-section">
-            <h2>💼 Management Reports</h2>
-            <p class="alert alert-info">
-                <strong>Daily & Weekly Reports:</strong> Access real-time operational metrics and performance indicators for informed decision-making.
-            </p>
-            
-            <div class="report-grid">
-                <div class="report-card">
-                    <h3>📈 Profit & Loss Statement</h3>
-                    <p>Comprehensive income statement showing revenue, expenses, and net profit with period comparisons and variance analysis.</p>
-                    <div class="report-actions">
-                        <a href="{% url 'management_reports:profit_loss' %}" class="btn btn-primary">📊 View Report</a>
-                        <a href="{% url 'management_reports:export_profit_loss_excel' %}" class="btn btn-success">📥 Excel</a>
-                        <a href="{% url 'management_reports:export_profit_loss_pdf' %}" class="btn btn-warning">📄 PDF</a>
-                    </div>
-                </div>
-                
-                <div class="report-card">
-                    <h3>👥 Loan Officer Performance</h3>
-                    <p>Individual and team performance metrics including disbursement targets, collection rates, and portfolio quality.</p>
-                    <div class="report-actions">
-                        <a href="{% url 'management_reports:officer_performance' %}" class="btn btn-primary">📊 View Report</a>
-                        <a href="{% url 'management_reports:export_officer_performance_excel' %}" class="btn btn-success">📥 Excel</a>
-                    </div>
-                </div>
-                
-                <div class="report-card">
-                    <h3>💰 Cash Position & Liquidity</h3>
-                    <p>Daily cash positions, liquidity ratios, and cash flow forecasting for treasury management.</p>
-                    <div class="report-actions">
-                        <a href="/reports/cashflow/" class="btn btn-primary">📊 View Report</a>
-                        <a href="/reports/excel/cashflow/" class="btn btn-success">📥 Excel</a>
-                    </div>
-                </div>
-            </div>
+        <div class="metric-card">
+            <h3>Collection Rate</h3>
+            <div class="metric-value">{{ metrics.collection_rate|floatformat:1|default:"0.0" }}%</div>
+            <span class="metric-change {% if metrics.collection_rate >= 95 %}positive{% else %}negative{% endif %}">
+                {% if metrics.collection_rate >= 95 %}✓ Target Met{% else %}⚠ Below Target{% endif %}
+            </span>
         </div>
         
-        <!-- Board Reports Section -->
-        <div class="report-section">
-            <h2>🎯 Board Reports</h2>
-            <p class="alert alert-warning">
-                <strong>Monthly & Quarterly Reports:</strong> Executive summaries and strategic KPIs for board oversight and governance.
-            </p>
-            
-            <div class="report-grid">
-                <div class="report-card">
-                    <h3>📋 Executive Summary Report</h3>
-                    <p>High-level overview of organizational performance, key metrics, risks, and strategic initiatives for board meetings.</p>
-                    <div class="report-actions">
-                        <a href="{% url 'management_reports:board_report' %}" class="btn btn-primary">📊 View Report</a>
-                        <a href="{% url 'management_reports:export_board_excel' %}" class="btn btn-success">📥 Excel</a>
-                        <a href="{% url 'management_reports:export_board_pdf' %}" class="btn btn-warning">📄 PDF</a>
-                    </div>
-                </div>
-                
-                <div class="report-card">
-                    <h3>📊 Portfolio Quality Report</h3>
-                    <p>Detailed analysis of loan portfolio quality, risk classification, PAR trends, and provisioning requirements.</p>
-                    <div class="report-actions">
-                        <a href="/reports/" class="btn btn-primary">📊 View Report</a>
-                        <a href="/reports/excel/aging/" class="btn btn-success">📥 Excel</a>
-                    </div>
-                </div>
-                
-                <div class="report-card">
-                    <h3>🏦 Regulatory Compliance (BoG)</h3>
-                    <p>Bank of Ghana regulatory reports including classification of advances and provisioning standards.</p>
-                    <div class="report-actions">
-                        <a href="/reports/" class="btn btn-primary">📊 View Report</a>
-                        <a href="/reports/excel/bog/" class="btn btn-success">📥 Excel</a>
-                        <a href="/reports/pdf/bog/" class="btn btn-warning">📄 PDF</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Scheduled Reports -->
-        <div class="report-section">
-            <h2>⏰ Automated Report Scheduling</h2>
-            <p class="alert alert-info">
-                <strong>Coming Soon:</strong> Configure automated report generation and email delivery on daily, weekly, monthly, or quarterly schedules.
-            </p>
-            <a href="/admin/management_reports/scheduledreport/" class="btn btn-primary">⚙️ Configure Scheduled Reports</a>
+        <div class="metric-card">
+            <h3>PAR 30 Days</h3>
+            <div class="metric-value">{{ metrics.par_30_percentage|floatformat:2|default:"0.00" }}%</div>
+            <span class="metric-change {% if metrics.par_30_percentage <= 3 %}positive{% else %}negative{% endif %}">
+                {% if metrics.par_30_percentage <= 3 %}✓ Excellent{% else %}⚠ Monitor{% endif %}
+            </span>
         </div>
     </div>
-</body>
-</html>
+    
+    <!-- Management Reports Section -->
+    <div class="report-section">
+        <h2>💼 Management Reports</h2>
+        <p class="alert alert-info">
+            <strong>Daily & Weekly Reports:</strong> Access real-time operational metrics and performance indicators for informed decision-making.
+        </p>
+        
+        <div class="report-grid">
+            <div class="report-card">
+                <h3>📈 Profit & Loss Statement</h3>
+                <p>Comprehensive income statement showing revenue, expenses, and net profit with period comparisons and variance analysis.</p>
+                <div class="report-actions">
+                    <a href="{% url 'management_reports:profit_loss' %}" class="btn btn-primary">📊 View Report</a>
+                    <a href="{% url 'management_reports:export_profit_loss_excel' %}" class="btn btn-success">📥 Excel</a>
+                    <a href="{% url 'management_reports:export_profit_loss_pdf' %}" class="btn btn-warning">📄 PDF</a>
+                </div>
+            </div>
+            
+            <div class="report-card">
+                <h3>👥 Loan Officer Performance</h3>
+                <p>Individual and team performance metrics including disbursement targets, collection rates, and portfolio quality.</p>
+                <div class="report-actions">
+                    <a href="{% url 'management_reports:officer_performance' %}" class="btn btn-primary">📊 View Report</a>
+                    <a href="{% url 'management_reports:export_officer_performance_excel' %}" class="btn btn-success">📥 Excel</a>
+                </div>
+            </div>
+            
+            <div class="report-card">
+                <h3>💰 Cash Position & Liquidity</h3>
+                <p>Daily cash positions, liquidity ratios, and cash flow forecasting for treasury management.</p>
+                <div class="report-actions">
+                    <a href="/reports/cashflow/" class="btn btn-primary">📊 View Report</a>
+                    <a href="/reports/excel/cashflow/" class="btn btn-success">📥 Excel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Board Reports Section -->
+    <div class="report-section">
+        <h2>🎯 Board Reports</h2>
+        <p class="alert alert-warning">
+            <strong>Monthly & Quarterly Reports:</strong> Executive summaries and strategic KPIs for board oversight and governance.
+        </p>
+        
+        <div class="report-grid">
+            <div class="report-card">
+                <h3>📋 Executive Summary Report</h3>
+                <p>High-level overview of organizational performance, key metrics, risks, and strategic initiatives for board meetings.</p>
+                <div class="report-actions">
+                    <a href="{% url 'management_reports:board_report' %}" class="btn btn-primary">📊 View Report</a>
+                    <a href="{% url 'management_reports:export_board_excel' %}" class="btn btn-success">📥 Excel</a>
+                    <a href="{% url 'management_reports:export_board_pdf' %}" class="btn btn-warning">📄 PDF</a>
+                </div>
+            </div>
+            
+            <div class="report-card">
+                <h3>📊 Portfolio Quality Report</h3>
+                <p>Detailed analysis of loan portfolio quality, risk classification, PAR trends, and provisioning requirements.</p>
+                <div class="report-actions">
+                    <a href="/reports/" class="btn btn-primary">📊 View Report</a>
+                    <a href="/reports/excel/aging/" class="btn btn-success">📥 Excel</a>
+                </div>
+            </div>
+            
+            <div class="report-card">
+                <h3>🏦 Regulatory Compliance (BoG)</h3>
+                <p>Bank of Ghana regulatory reports including classification of advances and provisioning standards.</p>
+                <div class="report-actions">
+                    <a href="/reports/" class="btn btn-primary">📊 View Report</a>
+                    <a href="/reports/excel/bog/" class="btn btn-success">📥 Excel</a>
+                    <a href="/reports/pdf/bog/" class="btn btn-warning">📄 PDF</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scheduled Reports -->
+    <div class="report-section">
+        <h2>⏰ Automated Report Scheduling</h2>
+        <p class="alert alert-info">
+            <strong>Coming Soon:</strong> Configure automated report generation and email delivery on daily, weekly, monthly, or quarterly schedules.
+        </p>
+        <a href="/admin/management_reports/scheduledreport/" class="btn btn-primary">⚙️ Configure Scheduled Reports</a>
+    </div>
+</div>
+{% endblock %}
