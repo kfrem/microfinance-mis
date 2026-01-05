@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghana Microfinance MIS - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .dashboard-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .dashboard-card .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        
+        .dashboard-card h2 {
+            color: #2d3748;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .dashboard-card p {
+            color: #718096;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .dashboard-card .features {
+            list-style: none;
+            text-align: left;
+            padding: 0;
+            margin: 20px 0;
+        }
+        
+        .dashboard-card .features li {
+            padding: 8px 0;
+            color: #4a5568;
+            font-size: 14px;
+        }
+        
+        .dashboard-card .features li:before {
+            content: "✓ ";
+            color: #48bb78;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+        
+        .badge-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .badge-success {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .badge-warning {
+            background: #ed8936;
+            color: white;
+        }
+        
+        .badge-info {
+            background: #4299e1;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏦 Ghana Microfinance MIS</h1>
+            <p>Comprehensive Management Information System</p>
+        </div>
+        
+        <div class="dashboard-grid">
+            <a href="/management/" class="dashboard-card">
+                <div class="icon">📊</div>
+                <h2>Management Dashboard</h2>
+                <p>Executive reporting and KPI monitoring</p>
+                <ul class="features">
+                    <li>Real-time KPI metrics</li>
+                    <li>Profit & Loss statements</li>
+                    <li>Officer performance tracking</li>
+                    <li>Board executive summaries</li>
+                </ul>
+                <span class="badge badge-primary">Phase 4 - Latest</span>
+            </a>
+            
+            <a href="/reports/" class="dashboard-card">
+                <div class="icon">📈</div>
+                <h2>Operational Reports</h2>
+                <p>Daily operations and regulatory reporting</p>
+                <ul class="features">
+                    <li>Client portfolio reports</li>
+                    <li>Loan aging analysis</li>
+                    <li>BoG regulatory reports</li>
+                    <li>Cash flow projections</li>
+                </ul>
+                <span class="badge badge-success">Phase 3</span>
+            </a>
+            
+            <a href="/dashboard/" class="dashboard-card">
+                <div class="icon">💹</div>
+                <h2>Analytics Dashboard</h2>
+                <p>Portfolio analytics and performance metrics</p>
+                <ul class="features">
+                    <li>Portfolio analysis</li>
+                    <li>PAR metrics tracking</li>
+                    <li>Trend analysis</li>
+                    <li>Risk indicators</li>
+                </ul>
+                <span class="badge badge-warning">Phase 2</span>
+            </a>
+            
+            <a href="/admin/" class="dashboard-card">
+                <div class="icon">⚙️</div>
+                <h2>Admin Panel</h2>
+                <p>System administration and data management</p>
+                <ul class="features">
+                    <li>Manage clients & loans</li>
+                    <li>Process repayments</li>
+                    <li>Configure settings</li>
+                    <li>User management</li>
+                </ul>
+                <span class="badge badge-info">Core System</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
