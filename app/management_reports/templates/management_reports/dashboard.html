@@ -273,8 +273,7 @@
                 <h3>💰 Cash Position & Liquidity</h3>
                 <p>Daily cash positions, liquidity ratios, and cash flow forecasting for treasury management.</p>
                 <div class="report-actions">
-                    <a href="/reports/cashflow/" class="btn btn-primary">📊 View Report</a>
-                    <a href="/reports/excel/cashflow/" class="btn btn-success">📥 Excel</a>
+                    <a href="{% url 'reports:cashflow_dashboard' %}" class="btn btn-primary">📊 View Dashboard</a>
                 </div>
             </div>
         </div>
@@ -302,8 +301,8 @@
                 <h3>📊 Portfolio Quality Report</h3>
                 <p>Detailed analysis of loan portfolio quality, risk classification, PAR trends, and provisioning requirements.</p>
                 <div class="report-actions">
-                    <a href="/reports/" class="btn btn-primary">📊 View Report</a>
-                    <a href="/reports/excel/aging/" class="btn btn-success">📥 Excel</a>
+                    <a href="{% url 'reports:dashboard' %}" class="btn btn-primary">📊 View Reports</a>
+                    <a href="{% url 'reports:excel_aging' %}" class="btn btn-success">📥 Excel</a>
                 </div>
             </div>
             
@@ -311,9 +310,8 @@
                 <h3>🏦 Regulatory Compliance (BoG)</h3>
                 <p>Bank of Ghana regulatory reports including classification of advances and provisioning standards.</p>
                 <div class="report-actions">
-                    <a href="/reports/" class="btn btn-primary">📊 View Report</a>
-                    <a href="/reports/excel/bog/" class="btn btn-success">📥 Excel</a>
-                    <a href="/reports/pdf/bog/" class="btn btn-warning">📄 PDF</a>
+                    <a href="{% url 'reports:dashboard' %}" class="btn btn-primary">📊 View Reports</a>
+                    <a href="{% url 'reports:excel_bog' %}" class="btn btn-success">📥 Excel</a>
                 </div>
             </div>
         </div>
