@@ -4,3 +4,4 @@ dj-database-url
 python-dateutil
 openpyxl
 reportlab
+colorama
