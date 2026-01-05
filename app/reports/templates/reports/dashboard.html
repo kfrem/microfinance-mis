@@ -123,7 +123,7 @@
                 <h3>Client Portfolio Report</h3>
                 <p>Complete client list with KYC status, loan details, and risk classification</p>
                 <div class="button-group">
-                    <a href="{% url 'reports:export_portfolio_excel' %}" class="btn btn-success">📥 Download Excel</a>
+                    <a href="{% url 'reports:excel_clients' %}" class="btn btn-success">📥 Download Excel</a>
                 </div>
             </div>
             
@@ -131,7 +131,7 @@
                 <h3>Loan Aging Analysis</h3>
                 <p>Loan aging by days in arrears with PAR classification and risk indicators</p>
                 <div class="button-group">
-                    <a href="{% url 'reports:export_aging_excel' %}" class="btn btn-success">📥 Download Excel</a>
+                    <a href="{% url 'reports:excel_aging' %}" class="btn btn-success">📥 Download Excel</a>
                 </div>
             </div>
             
@@ -139,7 +139,7 @@
                 <h3>Portfolio Summary</h3>
                 <p>Executive summary with key portfolio metrics and performance indicators</p>
                 <div class="button-group">
-                    <a href="{% url 'reports:export_portfolio_summary_pdf' %}" class="btn btn-warning">📄 Download PDF</a>
+                    <a href="{% url 'reports:pdf_portfolio' %}" class="btn btn-warning">📄 Download PDF</a>
                 </div>
             </div>
         </div>
@@ -152,8 +152,7 @@
                 <h3>Bank of Ghana (BoG) Report</h3>
                 <p>Regulatory report following BoG classification standards and provisioning guidelines</p>
                 <div class="button-group">
-                    <a href="{% url 'reports:export_bog_excel' %}" class="btn btn-success">📥 Download Excel</a>
-                    <a href="{% url 'reports:export_bog_pdf' %}" class="btn btn-warning">📄 Download PDF</a>
+                    <a href="{% url 'reports:excel_bog' %}" class="btn btn-success">📥 Download Excel</a>
                 </div>
             </div>
         </div>
@@ -167,7 +166,6 @@
                 <p>30-day cash flow forecast with expected collections and disbursements</p>
                 <div class="button-group">
                     <a href="{% url 'reports:cashflow_dashboard' %}" class="btn btn-primary">📊 Open Dashboard</a>
-                    <a href="{% url 'reports:export_cashflow_excel' %}" class="btn btn-success">📥 Download Excel</a>
                 </div>
             </div>
         </div>
