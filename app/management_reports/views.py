@@ -7,28 +7,52 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
 from datetime import date, timedelta
 from decimal import Decimal
-
-# Import analytics from reports app
-import sys
-sys.path.append('/app/reports')
+from django.db.models import Sum, Count, Q
 
 
 def management_dashboard(request):
     """Main management dashboard with KPI metrics"""
     
-    # Import here to avoid circular imports
-    from reports.analytics import PortfolioAnalytics
+    # Import models
+    from loans.models import Loan
+    from repayments.models import Repayment
+    from clients.models import Client
     
-    analytics = PortfolioAnalytics()
-    portfolio_summary = analytics.get_portfolio_summary()
-    par_metrics = analytics.get_par_metrics()
+    # Calculate metrics directly
+    active_loans = Loan.objects.filter(status='active')
     
-    # Combine metrics
+    # Total portfolio value
+    total_portfolio = active_loans.aggregate(
+        total=Sum('principal')
+    )['total'] or 0
+    
+    # Total outstanding
+    total_outstanding = sum(
+        loan.get_outstanding_balance() 
+        for loan in active_loans
+    )
+    
+    # Collection rate
+    disbursed = Loan.objects.filter(
+        status__in=['active', 'closed']
+    ).aggregate(total=Sum('principal'))['total'] or 0
+    
+    collected = Repayment.objects.filter(
+        status='confirmed'
+    ).aggregate(total=Sum('amount'))['total'] or 0
+    
+    collection_rate = (collected / disbursed * 100) if disbursed > 0 else 0
+    
+    # PAR 30
+    par_30_loans = active_loans.filter(days_in_arrears__gte=30)
+    par_30_value = sum(loan.get_outstanding_balance() for loan in par_30_loans)
+    par_30_percentage = (par_30_value / total_outstanding * 100) if total_outstanding > 0 else 0
+    
     metrics = {
-        'total_portfolio': portfolio_summary.get('total_portfolio_value', 0),
-        'total_outstanding': portfolio_summary.get('total_outstanding', 0),
-        'collection_rate': portfolio_summary.get('collection_rate', 0),
-        'par_30_percentage': par_metrics.get('par_30_percentage', 0),
+        'total_portfolio': total_portfolio,
+        'total_outstanding': total_outstanding,
+        'collection_rate': round(collection_rate, 2),
+        'par_30_percentage': round(par_30_percentage, 2),
     }
     
     context = {
@@ -190,12 +214,21 @@ def export_officer_performance_excel(request):
 @require_http_methods(["GET"])
 def api_portfolio_trends(request):
     """API endpoint for portfolio trend data"""
-    from reports.analytics import PortfolioAnalytics
+    from loans.models import Loan
+    from repayments.models import Repayment
     
-    analytics = PortfolioAnalytics()
-    portfolio_summary = analytics.get_portfolio_summary()
+    active_loans = Loan.objects.filter(status='active')
     
-    return JsonResponse(portfolio_summary)
+    total_portfolio = active_loans.aggregate(total=Sum('principal'))['total'] or 0
+    total_outstanding = sum(loan.get_outstanding_balance() for loan in active_loans)
+    
+    data = {
+        'total_portfolio_value': float(total_portfolio),
+        'total_outstanding': float(total_outstanding),
+        'active_loans': active_loans.count(),
+    }
+    
+    return JsonResponse(data)
 
 
 @require_http_methods(["GET"])
