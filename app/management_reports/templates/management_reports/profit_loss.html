@@ -99,6 +99,7 @@
             <p>Period: {{ report_date|date:"F Y" }}</p>
             
             <div class="actions">
+                <a href="/" class="btn btn-primary">🏠 Home</a>
                 <a href="/management/" class="btn btn-primary">← Back to Dashboard</a>
                 <a href="{% url 'management_reports:export_profit_loss_excel' %}" class="btn btn-success">📥 Download Excel</a>
                 <a href="{% url 'management_reports:export_profit_loss_pdf' %}" class="btn btn-warning">📄 Download PDF</a>

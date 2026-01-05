@@ -139,6 +139,7 @@
             <p>Report Date: {{ report_date|date:"F d, Y" }}</p>
             
             <div class="actions">
+                <a href="/" class="btn btn-primary">🏠 Home</a>
                 <a href="/management/" class="btn btn-primary">← Back to Dashboard</a>
                 <a href="{% url 'management_reports:export_officer_performance_excel' %}" class="btn btn-success">📥 Download Excel</a>
             </div>
