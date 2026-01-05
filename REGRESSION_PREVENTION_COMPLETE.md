@@ -13,7 +13,7 @@
 ## 🎯 **What I've Created For You**
 
 ### **1. Automated Unit Tests** ✅
-- **File:** `/app/management_reports/tests.py`
+- **File:** `app/management_reports/tests.py`
 - **Tests:** 36 automated tests covering:
   - All management reports (P&L, Board, Officer Performance)
   - All export functions (Excel + PDF)
@@ -23,7 +23,7 @@
   - Template rendering
 
 ### **2. System Validation Script** ✅
-- **File:** `/validate_system.py`
+- **File:** `app/validate_system.py`
 - **Checks:**
   - Database connectivity
   - Model integrity
@@ -34,7 +34,7 @@
   - 52 total validation points
 
 ### **3. Pre-Deployment Script** ✅
-- **File:** `/run_tests_before_commit.sh`
+- **File:** `app/run_tests_before_commit.sh`
 - **Runs:**
   - All unit tests
   - System validation
