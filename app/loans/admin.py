@@ -108,7 +108,8 @@ class LoanAdmin(admin.ModelAdmin):
         if obj.pk:
             outstanding = obj.get_outstanding_balance()
             color = 'red' if outstanding > 0 else 'green'
-            return format_html('<span style="color: {};">GHS {:,.2f}</span>', color, outstanding)
+            formatted_value = f'GHS {outstanding:,.2f}'
+            return format_html('<span style="color: {};">{}</span>', color, formatted_value)
         return '-'
     outstanding_display.short_description = 'Outstanding Balance'
     
@@ -116,7 +117,8 @@ class LoanAdmin(admin.ModelAdmin):
         if obj.pk and obj.status == 'active':
             arrears = obj.get_arrears_amount()
             if arrears > 0:
-                return format_html('<span style="color: red; font-weight: bold;">GHS {:,.2f}</span>', arrears)
+                formatted_value = f'GHS {arrears:,.2f}'
+                return format_html('<span style="color: red; font-weight: bold;">{}</span>', formatted_value)
             return format_html('<span style="color: green;">GHS 0.00</span>')
         return '-'
     arrears_display.short_description = 'Arrears'
@@ -238,7 +240,8 @@ class LoanScheduleAdmin(admin.ModelAdmin):
     
     def days_late_display(self, obj):
         if obj.days_late > 0:
-            return format_html('<span style="color: red; font-weight: bold;">{} days</span>', obj.days_late)
+            days_text = f'{obj.days_late} days'
+            return format_html('<span style="color: red; font-weight: bold;">{}</span>', days_text)
         return '0 days'
     days_late_display.short_description = 'Days Late'
     
