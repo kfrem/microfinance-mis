@@ -379,6 +379,202 @@ class ExcelReportGenerator:
         
         return self._save_workbook()
     
+    def generate_profit_loss_excel(self):
+        """Generate Profit & Loss statement Excel report."""
+        from loans.models import Loan
+        from repayments.models import Repayment
+        from django.db.models import Sum
+        
+        self._create_workbook()
+        ws = self.wb.active
+        ws.title = "Profit & Loss"
+        
+        # Title
+        ws['A1'] = f'PROFIT & LOSS STATEMENT - {date.today().strftime("%B %Y")}'
+        ws['A1'].font = Font(bold=True, size=14)
+        ws.append([])
+        
+        # REVENUE SECTION
+        ws.append(['REVENUE'])
+        ws[f'A{ws.max_row}'].font = Font(bold=True, size=12)
+        
+        # Calculate interest income (from confirmed payments)
+        interest_income = Repayment.objects.filter(
+            status='confirmed'
+        ).aggregate(total=Sum('interest_paid'))['total'] or 0
+        
+        # Calculate fee income
+        processing_fees = Loan.objects.filter(
+            status__in=['active', 'closed']
+        ).aggregate(total=Sum('processing_fee'))['total'] or 0
+        
+        insurance_fees = Loan.objects.filter(
+            status__in=['active', 'closed']
+        ).aggregate(total=Sum('insurance_fee'))['total'] or 0
+        
+        penalty_income = Repayment.objects.filter(
+            status='confirmed'
+        ).aggregate(total=Sum('penalty_paid'))['total'] or 0
+        
+        ws.append(['Interest Income (GHS):', float(interest_income)])
+        ws.append(['Processing Fees (GHS):', float(processing_fees)])
+        ws.append(['Insurance Fees (GHS):', float(insurance_fees)])
+        ws.append(['Penalty Income (GHS):', float(penalty_income)])
+        
+        total_revenue = float(interest_income + processing_fees + insurance_fees + penalty_income)
+        ws.append(['TOTAL REVENUE (GHS):', total_revenue])
+        ws[f'B{ws.max_row}'].font = Font(bold=True)
+        ws.append([])
+        
+        # EXPENSES SECTION (Placeholder - customize as needed)
+        ws.append(['EXPENSES'])
+        ws[f'A{ws.max_row}'].font = Font(bold=True, size=12)
+        
+        ws.append(['Staff Salaries (GHS):', 0])
+        ws.append(['Operating Expenses (GHS):', 0])
+        ws.append(['Administrative Costs (GHS):', 0])
+        ws.append(['Loan Loss Provisions (GHS):', 0])
+        
+        total_expenses = 0
+        ws.append(['TOTAL EXPENSES (GHS):', total_expenses])
+        ws[f'B{ws.max_row}'].font = Font(bold=True)
+        ws.append([])
+        
+        # NET PROFIT
+        ws.append(['NET PROFIT/LOSS (GHS):', total_revenue - total_expenses])
+        ws[f'A{ws.max_row}'].font = Font(bold=True, size=13, color="008000" if total_revenue > total_expenses else "FF0000")
+        ws[f'B{ws.max_row}'].font = Font(bold=True, size=13, color="008000" if total_revenue > total_expenses else "FF0000")
+        
+        self._auto_size_columns(ws)
+        return self._save_workbook()
+    
+    def generate_board_report_excel(self):
+        """Generate Board Executive Summary Excel report."""
+        from loans.models import Loan
+        from clients.models import Client
+        from django.db.models import Sum, Count
+        
+        self._create_workbook()
+        ws = self.wb.active
+        ws.title = "Board Report"
+        
+        # Title
+        ws['A1'] = f'BOARD EXECUTIVE SUMMARY - {date.today().strftime("%B %Y")}'
+        ws['A1'].font = Font(bold=True, size=14)
+        ws.append([])
+        
+        # PORTFOLIO OVERVIEW
+        ws.append(['PORTFOLIO OVERVIEW'])
+        ws[f'A{ws.max_row}'].font = Font(bold=True, size=12)
+        
+        active_loans = Loan.objects.filter(status='active')
+        total_portfolio = active_loans.aggregate(total=Sum('principal'))['total'] or 0
+        total_outstanding = sum(loan.get_outstanding_balance() for loan in active_loans)
+        
+        ws.append(['Total Active Loans:', active_loans.count()])
+        ws.append(['Total Portfolio Value (GHS):', float(total_portfolio)])
+        ws.append(['Total Outstanding (GHS):', float(total_outstanding)])
+        ws.append(['Active Clients:', Client.objects.filter(status='active').count()])
+        ws.append([])
+        
+        # PORTFOLIO QUALITY
+        ws.append(['PORTFOLIO QUALITY'])
+        ws[f'A{ws.max_row}'].font = Font(bold=True, size=12)
+        
+        par_30_loans = active_loans.filter(days_in_arrears__gte=30)
+        par_30_value = sum(loan.get_outstanding_balance() for loan in par_30_loans)
+        par_30_rate = (par_30_value / total_outstanding * 100) if total_outstanding > 0 else 0
+        
+        ws.append(['PAR 30 (%):', f'{par_30_rate:.2f}'])
+        ws.append(['Loans in Arrears:', par_30_loans.count()])
+        ws.append(['Arrears Value (GHS):', float(par_30_value)])
+        ws.append([])
+        
+        # LOAN CLASSIFICATION
+        ws.append(['LOAN CLASSIFICATION (BoG)'])
+        ws[f'A{ws.max_row}'].font = Font(bold=True, size=12)
+        
+        classifications = {
+            'Current (0-30 days)': active_loans.filter(days_in_arrears__lt=31).count(),
+            'Substandard (31-90 days)': active_loans.filter(days_in_arrears__gte=31, days_in_arrears__lte=90).count(),
+            'Doubtful (91-180 days)': active_loans.filter(days_in_arrears__gte=91, days_in_arrears__lte=180).count(),
+            'Loss (180+ days)': active_loans.filter(days_in_arrears__gt=180).count(),
+        }
+        
+        for classification, count in classifications.items():
+            ws.append([classification, count])
+        
+        ws.append([])
+        ws.append(['Report Generated:', date.today().strftime('%Y-%m-%d %H:%M')])
+        
+        self._auto_size_columns(ws)
+        return self._save_workbook()
+    
+    def generate_officer_performance_excel(self):
+        """Generate Loan Officer Performance Excel report."""
+        from django.contrib.auth.models import User
+        from loans.models import Loan
+        from repayments.models import Repayment
+        from django.db.models import Count, Sum, Q
+        
+        self._create_workbook()
+        ws = self.wb.active
+        ws.title = "Officer Performance"
+        
+        # Title
+        ws['A1'] = f'LOAN OFFICER PERFORMANCE - {date.today().strftime("%B %Y")}'
+        ws['A1'].font = Font(bold=True, size=14)
+        ws.append([])
+        
+        # Headers
+        headers = [
+            'Officer Name', 'Active Loans', 'Portfolio Value (GHS)',
+            'Outstanding (GHS)', 'Collection Rate (%)', 'PAR 30 (%)'
+        ]
+        ws.append(headers)
+        self._style_header_row(ws, ws.max_row)
+        
+        # Get all loan officers
+        officers = User.objects.filter(
+            created_loans__isnull=False
+        ).distinct()
+        
+        for officer in officers:
+            active_loans_qs = Loan.objects.filter(created_by=officer, status='active')
+            
+            portfolio_value = active_loans_qs.aggregate(total=Sum('principal'))['total'] or 0
+            total_outstanding = sum(loan.get_outstanding_balance() for loan in active_loans_qs)
+            
+            # Collection rate
+            disbursed = Loan.objects.filter(
+                created_by=officer,
+                status__in=['active', 'closed']
+            ).aggregate(total=Sum('principal'))['total'] or 0
+            
+            collected = Repayment.objects.filter(
+                loan__created_by=officer,
+                status='confirmed'
+            ).aggregate(total=Sum('amount'))['total'] or 0
+            
+            collection_rate = (collected / disbursed * 100) if disbursed > 0 else 0
+            
+            # PAR 30
+            par_30_loans = active_loans_qs.filter(days_in_arrears__gte=30)
+            par_30_value = sum(loan.get_outstanding_balance() for loan in par_30_loans)
+            par_30_rate = (par_30_value / total_outstanding * 100) if total_outstanding > 0 else 0
+            
+            ws.append([
+                officer.get_full_name() or officer.username,
+                active_loans_qs.count(),
+                float(portfolio_value),
+                float(total_outstanding),
+                f'{collection_rate:.2f}',
+                f'{par_30_rate:.2f}',
+            ])
+        
+        self._auto_size_columns(ws)
+        return self._save_workbook()
+    
     def _save_workbook(self):
         """Save workbook to BytesIO and return."""
         output = BytesIO()

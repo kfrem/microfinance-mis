@@ -316,3 +316,254 @@ class PDFReportGenerator:
         doc.build(story)
         buffer.seek(0)
         return buffer
+    
+    def generate_profit_loss_pdf(self):
+        """Generate Profit & Loss statement PDF."""
+        from loans.models import Loan
+        from repayments.models import Repayment
+        from django.db.models import Sum
+        
+        buffer = BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=letter)
+        story = []
+        
+        # Title
+        title = Paragraph(
+            f"PROFIT & LOSS STATEMENT<br/>{date.today().strftime('%B %Y')}", 
+            self.styles['CustomTitle']
+        )
+        story.append(title)
+        story.append(Spacer(1, 0.3*inch))
+        
+        # Calculate revenue
+        interest_income = Repayment.objects.filter(
+            status='confirmed'
+        ).aggregate(total=Sum('interest_paid'))['total'] or 0
+        
+        processing_fees = Loan.objects.filter(
+            status__in=['active', 'closed']
+        ).aggregate(total=Sum('processing_fee'))['total'] or 0
+        
+        insurance_fees = Loan.objects.filter(
+            status__in=['active', 'closed']
+        ).aggregate(total=Sum('insurance_fee'))['total'] or 0
+        
+        penalty_income = Repayment.objects.filter(
+            status='confirmed'
+        ).aggregate(total=Sum('penalty_paid'))['total'] or 0
+        
+        total_revenue = float(interest_income + processing_fees + insurance_fees + penalty_income)
+        
+        # Revenue section
+        revenue_heading = Paragraph("REVENUE", self.styles['CustomHeading'])
+        story.append(revenue_heading)
+        
+        revenue_data = [
+            ['Item', 'Amount (GHS)'],
+            ['Interest Income', f'{float(interest_income):,.2f}'],
+            ['Processing Fees', f'{float(processing_fees):,.2f}'],
+            ['Insurance Fees', f'{float(insurance_fees):,.2f}'],
+            ['Penalty Income', f'{float(penalty_income):,.2f}'],
+            ['TOTAL REVENUE', f'{total_revenue:,.2f}'],
+        ]
+        
+        revenue_table = Table(revenue_data, colWidths=[3*inch, 2.5*inch])
+        revenue_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#366092')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#E8E8E8')),
+            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ]))
+        
+        story.append(revenue_table)
+        story.append(Spacer(1, 0.3*inch))
+        
+        # Expenses section (placeholder)
+        expenses_heading = Paragraph("EXPENSES", self.styles['CustomHeading'])
+        story.append(expenses_heading)
+        
+        total_expenses = 0
+        
+        expense_data = [
+            ['Item', 'Amount (GHS)'],
+            ['Staff Salaries', '0.00'],
+            ['Operating Expenses', '0.00'],
+            ['Administrative Costs', '0.00'],
+            ['Loan Loss Provisions', '0.00'],
+            ['TOTAL EXPENSES', f'{total_expenses:,.2f}'],
+        ]
+        
+        expense_table = Table(expense_data, colWidths=[3*inch, 2.5*inch])
+        expense_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#366092')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#E8E8E8')),
+            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ]))
+        
+        story.append(expense_table)
+        story.append(Spacer(1, 0.3*inch))
+        
+        # Net Profit
+        net_profit = total_revenue - total_expenses
+        profit_color = colors.green if net_profit >= 0 else colors.red
+        
+        profit_data = [
+            ['NET PROFIT/LOSS', f'GHS {net_profit:,.2f}'],
+        ]
+        
+        profit_table = Table(profit_data, colWidths=[3*inch, 2.5*inch])
+        profit_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#E8E8E8')),
+            ('TEXTCOLOR', (0, 0), (-1, -1), profit_color),
+            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 14),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
+            ('GRID', (0, 0), (-1, -1), 1, colors.grey),
+        ]))
+        
+        story.append(profit_table)
+        
+        # Build PDF
+        doc.build(story)
+        buffer.seek(0)
+        return buffer
+    
+    def generate_board_report_pdf(self):
+        """Generate Board Executive Summary PDF."""
+        from loans.models import Loan
+        from clients.models import Client
+        from django.db.models import Sum
+        
+        buffer = BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=letter)
+        story = []
+        
+        # Title
+        title = Paragraph(
+            f"BOARD EXECUTIVE SUMMARY<br/>{date.today().strftime('%B %Y')}", 
+            self.styles['CustomTitle']
+        )
+        story.append(title)
+        story.append(Spacer(1, 0.3*inch))
+        
+        # Portfolio Overview
+        overview_heading = Paragraph("PORTFOLIO OVERVIEW", self.styles['CustomHeading'])
+        story.append(overview_heading)
+        
+        active_loans = Loan.objects.filter(status='active')
+        total_portfolio = active_loans.aggregate(total=Sum('principal'))['total'] or 0
+        total_outstanding = sum(loan.get_outstanding_balance() for loan in active_loans)
+        active_clients = Client.objects.filter(status='active').count()
+        
+        overview_data = [
+            ['Metric', 'Value'],
+            ['Total Active Loans', f'{active_loans.count():,}'],
+            ['Total Portfolio Value', f'GHS {float(total_portfolio):,.2f}'],
+            ['Total Outstanding', f'GHS {float(total_outstanding):,.2f}'],
+            ['Active Clients', f'{active_clients:,}'],
+        ]
+        
+        overview_table = Table(overview_data, colWidths=[3*inch, 2.5*inch])
+        overview_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#366092')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.lightgrey]),
+        ]))
+        
+        story.append(overview_table)
+        story.append(Spacer(1, 0.3*inch))
+        
+        # Portfolio Quality
+        quality_heading = Paragraph("PORTFOLIO QUALITY", self.styles['CustomHeading'])
+        story.append(quality_heading)
+        
+        par_30_loans = active_loans.filter(days_in_arrears__gte=30)
+        par_30_value = sum(loan.get_outstanding_balance() for loan in par_30_loans)
+        par_30_rate = (par_30_value / total_outstanding * 100) if total_outstanding > 0 else 0
+        
+        quality_data = [
+            ['Metric', 'Value'],
+            ['PAR 30 Rate', f'{par_30_rate:.2f}%'],
+            ['Loans in Arrears', f'{par_30_loans.count():,}'],
+            ['Arrears Value', f'GHS {float(par_30_value):,.2f}'],
+        ]
+        
+        quality_table = Table(quality_data, colWidths=[3*inch, 2.5*inch])
+        quality_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#366092')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.lightgrey]),
+        ]))
+        
+        story.append(quality_table)
+        story.append(Spacer(1, 0.3*inch))
+        
+        # BoG Classification
+        classification_heading = Paragraph("LOAN CLASSIFICATION (BoG)", self.styles['CustomHeading'])
+        story.append(classification_heading)
+        
+        classifications = {
+            'Current (0-30 days)': active_loans.filter(days_in_arrears__lt=31).count(),
+            'Substandard (31-90 days)': active_loans.filter(days_in_arrears__gte=31, days_in_arrears__lte=90).count(),
+            'Doubtful (91-180 days)': active_loans.filter(days_in_arrears__gte=91, days_in_arrears__lte=180).count(),
+            'Loss (180+ days)': active_loans.filter(days_in_arrears__gt=180).count(),
+        }
+        
+        class_data = [['Classification', 'Count']]
+        for classification, count in classifications.items():
+            class_data.append([classification, f'{count:,}'])
+        
+        class_table = Table(class_data, colWidths=[3*inch, 2.5*inch])
+        class_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#366092')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.lightgrey]),
+        ]))
+        
+        story.append(class_table)
+        story.append(Spacer(1, 0.2*inch))
+        
+        # Footer
+        footer_text = Paragraph(
+            f"<i>Report Generated: {date.today().strftime('%d %B %Y')}</i>",
+            self.styles['Normal']
+        )
+        story.append(footer_text)
+        
+        # Build PDF
+        doc.build(story)
+        buffer.seek(0)
+        return buffer
