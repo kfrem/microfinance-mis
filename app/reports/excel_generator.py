@@ -534,25 +534,25 @@ class ExcelReportGenerator:
         ws.append(headers)
         self._style_header_row(ws, ws.max_row)
         
-        # Get all loan officers
+        # Get all loan officers (users who disbursed loans)
         officers = User.objects.filter(
-            created_loans__isnull=False
+            disbursed_loans__isnull=False
         ).distinct()
         
         for officer in officers:
-            active_loans_qs = Loan.objects.filter(created_by=officer, status='active')
+            active_loans_qs = Loan.objects.filter(disbursed_by=officer, status='active')
             
             portfolio_value = active_loans_qs.aggregate(total=Sum('principal'))['total'] or 0
             total_outstanding = sum(loan.get_outstanding_balance() for loan in active_loans_qs)
             
             # Collection rate
             disbursed = Loan.objects.filter(
-                created_by=officer,
+                disbursed_by=officer,
                 status__in=['active', 'closed']
             ).aggregate(total=Sum('principal'))['total'] or 0
             
             collected = Repayment.objects.filter(
-                loan__created_by=officer,
+                loan__disbursed_by=officer,
                 status='confirmed'
             ).aggregate(total=Sum('amount'))['total'] or 0
             

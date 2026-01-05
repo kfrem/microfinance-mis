@@ -143,18 +143,18 @@ def officer_performance(request):
     from repayments.models import Repayment
     from django.db.models import Count, Sum, Q
     
-    # Get all loan officers (users with loans)
+    # Get all loan officers (users who disbursed loans)
     officers = User.objects.filter(
-        created_loans__isnull=False
+        disbursed_loans__isnull=False
     ).distinct().annotate(
-        active_loans=Count('created_loans', filter=Q(created_loans__status='active')),
-        total_portfolio=Sum('created_loans__principal', filter=Q(created_loans__status='active'))
+        active_loans=Count('disbursed_loans', filter=Q(disbursed_loans__status='active')),
+        total_portfolio=Sum('disbursed_loans__principal', filter=Q(disbursed_loans__status='active'))
     )
     
     officer_data = []
     for officer in officers:
         # Calculate metrics
-        active_loans_qs = Loan.objects.filter(created_by=officer, status='active')
+        active_loans_qs = Loan.objects.filter(disbursed_by=officer, status='active')
         
         total_outstanding = sum(
             loan.get_outstanding_balance() 
@@ -163,12 +163,12 @@ def officer_performance(request):
         
         # Collection rate
         disbursed = Loan.objects.filter(
-            created_by=officer,
+            disbursed_by=officer,
             status__in=['active', 'closed']
         ).aggregate(total=Sum('principal'))['total'] or 0
         
         collected = Repayment.objects.filter(
-            loan__created_by=officer,
+            loan__disbursed_by=officer,
             status='confirmed'
         ).aggregate(total=Sum('amount'))['total'] or 0
         
