@@ -1,320 +1,176 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reports & Exports - Microfinance MIS</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #f5f7fa;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        
-        .subtitle {
-            color: #7f8c8d;
-            margin-bottom: 30px;
-        }
-        
-        .section {
-            background: white;
-            border-radius: 8px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .section h2 {
-            color: #34495e;
-            margin-bottom: 15px;
-            font-size: 20px;
-        }
-        
-        .report-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        
-        .report-card {
-            border: 2px solid #e0e6ed;
-            border-radius: 6px;
-            padding: 20px;
-            transition: all 0.3s;
-        }
-        
-        .report-card:hover {
-            border-color: #3498db;
-            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.2);
-        }
-        
-        .report-card h3 {
-            color: #2c3e50;
-            margin-bottom: 8px;
-            font-size: 16px;
-        }
-        
-        .report-card p {
-            color: #7f8c8d;
-            font-size: 14px;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.2s;
-        }
-        
-        .btn-excel {
-            background: #27ae60;
-            color: white;
-        }
-        
-        .btn-excel:hover {
-            background: #229954;
-        }
-        
-        .btn-pdf {
-            background: #e74c3c;
-            color: white;
-        }
-        
-        .btn-pdf:hover {
-            background: #c0392b;
-        }
-        
-        .btn-view {
-            background: #3498db;
-            color: white;
-        }
-        
-        .btn-view:hover {
-            background: #2980b9;
-        }
-        
-        .nav-links {
-            background: white;
-            padding: 15px 25px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: flex;
-            gap: 20px;
-        }
-        
-        .nav-links a {
-            color: #3498db;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        
-        .nav-links a:hover {
-            text-decoration: underline;
-        }
-        
-        .date-filter {
-            margin-top: 10px;
-            padding: 10px;
-            background: #ecf0f1;
-            border-radius: 4px;
-        }
-        
-        .date-filter label {
-            font-size: 14px;
-            margin-right: 10px;
-        }
-        
-        .date-filter input {
-            padding: 6px;
-            border: 1px solid #bdc3c7;
-            border-radius: 3px;
-            margin-right: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="nav-links">
-            <a href="/admin/">← Back to Admin</a>
-            <a href="/dashboard/">Dashboard</a>
-            <a href="/reports/cashflow/">Cash Flow Projections</a>
-        </div>
-        
-        <h1>📊 Reports & Export Center</h1>
-        <p class="subtitle">Generate and download comprehensive reports in Excel and PDF formats</p>
-        
-        <!-- Excel Reports Section -->
-        <div class="section">
-            <h2>📗 Excel Reports</h2>
-            <div class="report-grid">
-                <div class="report-card">
-                    <h3>Client Portfolio Report</h3>
-                    <p>Complete list of all clients with KYC status, active loans, and outstanding balances</p>
-                    <div class="button-group">
-                        <a href="{% url 'reports:excel_clients' %}" class="btn btn-excel">📥 Download Excel</a>
-                    </div>
-                </div>
-                
-                <div class="report-card">
-                    <h3>Loan Aging Report</h3>
-                    <p>Detailed aging analysis showing days in arrears, BoG classification, and arrears buckets</p>
-                    <div class="button-group">
-                        <a href="{% url 'reports:excel_aging' %}" class="btn btn-excel">📥 Download Excel</a>
-                    </div>
-                </div>
-                
-                <div class="report-card">
-                    <h3>Collection Report</h3>
-                    <p>Payment history with allocation breakdown (principal, interest, penalties)</p>
-                    <div class="date-filter">
-                        <form action="{% url 'reports:excel_collection' %}" method="get" style="display: inline;">
-                            <label>From:</label>
-                            <input type="date" name="start_date" id="start_date">
-                            <label>To:</label>
-                            <input type="date" name="end_date" id="end_date">
-                            <button type="submit" class="btn btn-excel">📥 Download</button>
-                        </form>
-                    </div>
-                </div>
-                
-                <div class="report-card">
-                    <h3>BoG Regulatory Report</h3>
-                    <p>Bank of Ghana compliance report with loan classification, provisions, and PAR metrics</p>
-                    <div class="button-group">
-                        <a href="{% url 'reports:excel_bog' %}" class="btn btn-excel">📥 Download Excel</a>
-                    </div>
+{% extends 'base.html' %}
+
+{% block title %}Operational Reports - Ghana Microfinance MIS{% endblock %}
+{% block nav_reports %}active{% endblock %}
+
+{% block extra_style %}
+<style>
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .page-header {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    
+    .page-header h1 {
+        color: #2d3748;
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+    
+    .section {
+        background: white;
+        border-radius: 8px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .section h2 {
+        color: #34495e;
+        margin-bottom: 15px;
+        font-size: 20px;
+    }
+    
+    .report-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 15px;
+    }
+    
+    .report-item {
+        border: 1px solid #e0e0e0;
+        padding: 20px;
+        border-radius: 6px;
+        background: #fafafa;
+    }
+    
+    .report-item h3 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+    
+    .report-item p {
+        color: #7f8c8d;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+    
+    .button-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    
+    .btn-primary {
+        background: #3498db;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: #2980b9;
+    }
+    
+    .btn-success {
+        background: #27ae60;
+        color: white;
+    }
+    
+    .btn-success:hover {
+        background: #229954;
+    }
+    
+    .btn-warning {
+        background: #e67e22;
+        color: white;
+    }
+    
+    .btn-warning:hover {
+        background: #d35400;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>📈 Operational Reports & Exports</h1>
+        <p class="subtitle">Generate and download reports in multiple formats</p>
+    </div>
+    
+    <div class="section">
+        <h2>📊 Portfolio Reports</h2>
+        <div class="report-grid">
+            <div class="report-item">
+                <h3>Client Portfolio Report</h3>
+                <p>Complete client list with KYC status, loan details, and risk classification</p>
+                <div class="button-group">
+                    <a href="{% url 'reports:export_portfolio_excel' %}" class="btn btn-success">📥 Download Excel</a>
                 </div>
             </div>
-        </div>
-        
-        <!-- PDF Reports Section -->
-        <div class="section">
-            <h2>📕 PDF Reports</h2>
-            <div class="report-grid">
-                <div class="report-card">
-                    <h3>Portfolio Summary (PDF)</h3>
-                    <p>Executive summary of portfolio performance with key metrics and BoG classification</p>
-                    <div class="button-group">
-                        <a href="{% url 'reports:pdf_portfolio' %}" class="btn btn-pdf">📥 Download PDF</a>
-                    </div>
-                </div>
-                
-                <div class="report-card">
-                    <h3>Loan Statements</h3>
-                    <p>Generate detailed loan statements for specific loans (enter loan ID in admin)</p>
-                    <div class="button-group">
-                        <a href="/admin/loans/loan/" class="btn btn-view">View Loans</a>
-                    </div>
-                </div>
-                
-                <div class="report-card">
-                    <h3>Payment Receipts</h3>
-                    <p>Generate professional payment receipts for any transaction (available in repayments)</p>
-                    <div class="button-group">
-                        <a href="/admin/repayments/repayment/" class="btn btn-view">View Payments</a>
-                    </div>
+            
+            <div class="report-item">
+                <h3>Loan Aging Analysis</h3>
+                <p>Loan aging by days in arrears with PAR classification and risk indicators</p>
+                <div class="button-group">
+                    <a href="{% url 'reports:export_aging_excel' %}" class="btn btn-success">📥 Download Excel</a>
                 </div>
             </div>
-        </div>
-        
-        <!-- Cash Flow & Projections -->
-        <div class="section">
-            <h2>💰 Cash Flow & Projections</h2>
-            <div class="report-grid">
-                <div class="report-card">
-                    <h3>Cash Flow Dashboard</h3>
-                    <p>Interactive dashboard showing expected payments, revenue projections, and collection forecasts</p>
-                    <div class="button-group">
-                        <a href="{% url 'reports:cashflow_dashboard' %}" class="btn btn-view">📈 Open Dashboard</a>
-                    </div>
-                </div>
-                
-                <div class="report-card">
-                    <h3>Revenue Projections</h3>
-                    <p>12-month revenue forecast based on active loan schedules and historical collection rates</p>
-                    <div class="button-group">
-                        <a href="{% url 'reports:cashflow_dashboard' %}" class="btn btn-view">📊 View Projections</a>
-                    </div>
-                </div>
-                
-                <div class="report-card">
-                    <h3>Risk Forecast</h3>
-                    <p>Arrears risk analysis showing potential collection challenges by loan classification</p>
-                    <div class="button-group">
-                        <a href="{% url 'reports:cashflow_dashboard' %}" class="btn btn-view">⚠️ View Risk Analysis</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Quick Access -->
-        <div class="section">
-            <h2>⚡ Quick Access</h2>
-            <div class="report-grid">
-                <div class="report-card">
-                    <h3>Generate All Reports</h3>
-                    <p>Download all available reports at once (this may take a moment)</p>
-                    <div class="button-group">
-                        <button class="btn btn-excel" onclick="downloadAllReports()">📥 Download All</button>
-                    </div>
+            
+            <div class="report-item">
+                <h3>Portfolio Summary</h3>
+                <p>Executive summary with key portfolio metrics and performance indicators</p>
+                <div class="button-group">
+                    <a href="{% url 'reports:export_portfolio_summary_pdf' %}" class="btn btn-warning">📄 Download PDF</a>
                 </div>
             </div>
         </div>
     </div>
     
-    <script>
-        // Set default dates for collection report (current month)
-        const today = new Date();
-        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-        document.getElementById('start_date').valueAsDate = firstDay;
-        document.getElementById('end_date').valueAsDate = today;
-        
-        function downloadAllReports() {
-            alert('This will download: Client Portfolio, Loan Aging, Collection Report, and BoG Report');
-            
-            // Download each report
-            const reports = [
-                '{% url "reports:excel_clients" %}',
-                '{% url "reports:excel_aging" %}',
-                '{% url "reports:excel_collection" %}',
-                '{% url "reports:excel_bog" %}',
-                '{% url "reports:pdf_portfolio" %}'
-            ];
-            
-            reports.forEach((url, index) => {
-                setTimeout(() => {
-                    window.location.href = url;
-                }, index * 1000); // Stagger downloads by 1 second
-            });
-        }
-    </script>
-</body>
-</html>
+    <div class="section">
+        <h2>🏦 Regulatory Reports</h2>
+        <div class="report-grid">
+            <div class="report-item">
+                <h3>Bank of Ghana (BoG) Report</h3>
+                <p>Regulatory report following BoG classification standards and provisioning guidelines</p>
+                <div class="button-group">
+                    <a href="{% url 'reports:export_bog_excel' %}" class="btn btn-success">📥 Download Excel</a>
+                    <a href="{% url 'reports:export_bog_pdf' %}" class="btn btn-warning">📄 Download PDF</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>💰 Cash Flow Reports</h2>
+        <div class="report-grid">
+            <div class="report-item">
+                <h3>Cash Flow Projection</h3>
+                <p>30-day cash flow forecast with expected collections and disbursements</p>
+                <div class="button-group">
+                    <a href="{% url 'reports:cashflow_dashboard' %}" class="btn btn-primary">📊 Open Dashboard</a>
+                    <a href="{% url 'reports:export_cashflow_excel' %}" class="btn btn-success">📥 Download Excel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
