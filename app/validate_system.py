@@ -220,14 +220,14 @@ class SystemValidator:
         
         import os
         templates_to_check = [
-            'app/core/templates/base.html',
-            'app/core/templates/home.html',
-            'app/management_reports/templates/management_reports/dashboard.html',
-            'app/management_reports/templates/management_reports/profit_loss.html',
-            'app/management_reports/templates/management_reports/board_report.html',
-            'app/management_reports/templates/management_reports/officer_performance.html',
-            'app/reports/templates/reports/dashboard.html',
-            'app/dashboard/templates/dashboard/executive_dashboard.html',
+            'core/templates/base.html',
+            'core/templates/home.html',
+            'management_reports/templates/management_reports/dashboard.html',
+            'management_reports/templates/management_reports/profit_loss.html',
+            'management_reports/templates/management_reports/board_report.html',
+            'management_reports/templates/management_reports/officer_performance.html',
+            'reports/templates/reports/dashboard.html',
+            'dashboard/templates/dashboard/executive_dashboard.html',
         ]
         
         for template_path in templates_to_check:
